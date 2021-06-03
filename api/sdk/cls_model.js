@@ -3,25 +3,26 @@ const tf = require('@tensorflow/tfjs-node');
 function normalized(data){ // i & r
     i = (data[0] - 12.585) / 6.813882
     r = (data[1] - 51.4795) / 29.151289
-    v = (data[1] - 650.4795) / 552.6351
-    p = (data[1] - 10620.56) / 12152.78
+    v = (data[2] - 650.4795) / 552.6351
+    p = (data[3] - 10620.56) / 12152.78
 
     return [i, r, v, p]
 }
 
 const argFact = (compareFn) => (array) => array.map((el, idx) => [el, idx]).reduce(compareFn)[1]
-const argmax = argFact ((min, el) => (el[0] > min[0] ? el : min))
+const argMax = argFact ((min, el) => (el[0] > min[0] ? el : min))
 
-function Argmax(res){
+function ArgMax(res){
   label = "NORMAL"
     cls_data = []
-  if (i=0; i<res.length; i++){
+  for (i=0; i<res.length; i++){
     cls_data[i] = res[i]
   }
     console.log(cls_data, argMax(cls_data));
+    
     if(argMax(cls_data) == 1){
       label = "OVER VOLTAGE"
-    }if (argmax(cls_data) == 0){
+    }if (argMax(cls_data) == 0){
       label = "DROP VOLTAGE"
     }
     return label
@@ -37,7 +38,7 @@ async function classify(data){
 
     try{
         // path load in public access => github
-        const path = 'https://raw.githubusercontent.com/Afaizin-bitt/jst_cls_nodejs/main/api/sdk/cls_model.js';
+        const path = 'https://raw.githubusercontent.com/Afaizin-bitt/JST_Service/main/api/sdk/cls_model.js';
         const model = await tf.loadGraphModel(path);
         
         predict = model.predict(
